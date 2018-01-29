@@ -70,7 +70,7 @@ shinyUI(fluidPage(
                          p("Eicosenoic: 1"),
                          p(strong("Inland Sardinia")),
                          h3("Take a look inside"),
-                         p("If you would like to know more about this app press ", a(href="","here"))
+                         p("If you would like to know more about this app press ", a(href="https://faall.github.io/ProgrammingAssignment9_4/ItalianOilEDA.html","here"))
                          )
           )
     )
