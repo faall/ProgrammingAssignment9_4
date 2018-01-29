@@ -1,0 +1,133 @@
+---
+title: "Italian Olive Oil EDA"
+author: "Fabio Alexandre Alberini Lopes Lima"
+date: "28 de enero de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Objective
+
+The main objective of this exercise is to explore Shiny and Slidify, the final evaluation will only be based in the ability of the Shiny application to receive inputs and produce an output, and the existence o Slidify presentation.
+
+The application designed is based on a classification model that takes as inputs several fatty acids values and presents the cultivation region in Italy as output.
+
+The data preparation, model training and selection are fundamental parts of the application development but are not subject to evaluation in this exercise, so a very basic exploratory data analysis and model selection is performed here.
+
+## The olive oil data set
+
+This analysis requires `caret` and `gbm` packages. A seed is also set to make it easily reproducible.
+
+```{r libraries, warning=FALSE, message=FALSE}
+library(caret)
+library(gbm)
+library(plyr)
+set.seed(6363)
+```
+
+The olive oil data set is part of `pgmm` package [here](https://cran.r-project.org/web/packages/pgmm/pgmm.pdf]). In this project the data set is stored locally:
+
+```{r load data}
+load("olive.rda")
+```
+
+All data in this data set is numerical, to easy the data handling, model training and result interpretation first convert the geographic information into factors.
+
+There are two variables that represent geographical data: general regions of Italy (**Region**) and olive oil production areas (**Area**). They are represented as numbers and their meaning is explained in the package documentation.
+
+First create new strings with the names of the regions and areas and then convert numbers to factors defining the labels:
+
+```{r transform factors}
+areas <- c("North Apulia", "Calabria", "South Apulia", "Sicily", "Inland Sardinia", 
+          "Costal Sardinia", "East Liguria", "West Liguria", "Umbria")
+
+regions <- c("Southern Italy", "Sardinia", "Northern Italy")
+
+olive$Region <- factor(olive$Region, labels = regions)
+
+olive$Area <- factor(olive$Area, labels = areas)
+```
+
+## Data preparation 
+
+First create the training (70% of observations), validation (15% of observations to be used for selecting the model) and testing (15% of observations to evaluate the final model) sets. Also remove **Region** since it will not be used in the Shinny app.
+
+```{r working data sets}
+inTrain <- createDataPartition(olive$Area, p = 0.7, list = F)
+
+oliveTrain <- olive[inTrain, -1]
+
+oliveVal <- olive[-inTrain, -1]
+
+inVal <- createDataPartition(oliveVal$Area, p = 0.5, list = F)
+
+oliveTest <- oliveVal[-inVal,]
+
+oliveVal <- oliveVal[inVal,]
+```
+
+## Exploring the data
+
+Since this project's main objective is the final presentation in Shinny and Slidify only a very quick and superficial analysis of the data is performed. This creates a plot relating all variables to one another.
+
+```{r plot, fig.width=10, fig.height=10}
+plot(oliveTrain)
+```
+
+The plot suggests that some variables might have a (negative) correlation. This information is useful to try to simplify the user input to the model, it might be possible to use less variables in the final model.
+
+## Model training and selection
+
+### First model: boosting with all variables.
+
+First throw all variables to the model and see what we can get.
+
+```{r model all, cache=TRUE}
+gbm1 <- train(Area ~ ., data = oliveTrain, method = "gbm", verbose = F)
+pred1 <- predict(gbm1, newdata = oliveVal)
+```
+
+### Second model: remove some of the varables that seem to be corelated
+
+The intention is to simplify the model so the user has to input less variables in the app. Removing **Palmitic**, **Palmitoleic** and **Linoleic**.
+
+```{r model some out, cache=TRUE}
+gbm2 <- train(Area ~ ., data = oliveTrain[,-c(2,3,6)], method = "gbm", verbose = F)
+pred2 <- predict(gbm2, newdata = oliveVal[,-c(2,3,6)])
+```
+
+### Third model: remove some of the varables that seem to be corelated or have the same response to area
+
+The intention, again, is to simplify model so the user has to input less variables in the app, but removing different variables from the previous one. Removing Removing **Palmitoleic**, ** Oleic**, and **Linolenic**.
+
+```{r model other out, cache=TRUE}
+gbm3 <- train(Area ~ ., data = oliveTrain[,-c(3,5,7)], method = "gbm", verbose = F)
+pred3 <- predict(gbm3, newdata = oliveVal[,-c(3,5,7)])
+```
+
+### Comparing the three models using the validation data set
+
+```{r validation}
+line <- confusionMatrix(oliveVal$Area, pred1)$overall
+
+dimnames <- list(c("gbm1","gbm2", "gbm3"),attr(line,"names")) 
+
+table <- matrix(data=line,nrow = 3,ncol = 7, byrow = T, dimnames = dimnames)
+
+table[2,] <- confusionMatrix(oliveVal$Area, pred2)$overall
+table[3,] <- confusionMatrix(oliveVal$Area, pred3)$overall
+
+table[,c(1,3,4,6)]
+```
+
+## Use model 3: calculate final accuracy to promote the application
+
+It seems that model 3 can give a good accuracy (not as good as using all variables, but better than model 2) with less variables. Here comes a (wild) assumption that testing a sample of oil for less components is cheaper and that is worth the relatively lower accuracy. 
+
+```{r final model}
+predF <- predict(gbm3, newdata = oliveTest[,-c(3,5,7)])
+confusionMatrix(oliveTest$Area, predF)$overall
+```
