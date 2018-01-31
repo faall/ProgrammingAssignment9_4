@@ -1,0 +1,69 @@
+---
+title       : Italian Olive Oil Identifier
+subtitle    : Shiny app to identify olive oils from components
+author      : Fabio Alexandre Alberini Lopes Lima
+job         : 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : zenburn      # {tomorrow, zenburn}
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+logo        : 
+---
+
+## Presentation
+
+This application is meant to be a quick tool to identify the origin of Italian olive oils based on the sample's analysis of fatty acids.
+
+To speed up the sample analysis the application will only require 5 fatty acids measurements as inputs achieving a 93.75% accuracy.
+
+The application is web based, access is easy from anywhere and it features a clean, intuitive  interface for quick input and result presentation.
+
+
+
+---
+
+## User Interface
+
+![](./assets/img/Screenshot_web.png)
+
+---
+
+## How to
+
+The app has a very straightforward use:
+
+1. Move the sliders of each fatty acid to the appropriate value.
+2. Press the `Go!` button
+  
+
+The main panel will refresh and show the name of the producing area and the map will highlight the province where the area belongs.
+  
+
+The user can select the `Help` tab in the main panel for more details, including sample values.
+
+---
+
+## Behind the scenes
+
+
+
+Essentially, the front-end of the app passes the values for the different fatty acids to the  server side where they are fed to a previously generated model:
+
+
+```r
+userInput <- data.frame(Palmitic = 1116, Stearic = 231, Linoleic = 1168, 
+                        Arachidic = 66, Eicosenoic = 1)
+
+predict(gbm3, userInput)
+```
+
+```
+## [1] Inland Sardinia
+## 9 Levels: North Apulia Calabria South Apulia Sicily ... Umbria
+```
+
+The model returns then the Area where the olive oil was produced to be shown in the map provided by googleVis.
+
+*For more details on the model construction click* [here](https://faall.github.io/ProgrammingAssignment9_4/ItalianOilEDA.html)

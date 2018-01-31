@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Italian Olive Oil Identifier</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Italian Olive Oil Identifier">
+  <meta name="author" content="Fabio Alexandre Alberini Lopes Lima">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/zenburn.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Italian Olive Oil Identifier</h1>
+    <h2>Shiny app to identify olive oils from components</h2>
+    <p>Fabio Alexandre Alberini Lopes Lima<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Presentation</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>This application is meant to be a quick tool to identify the origin of Italian olive oils based on the sample&#39;s analysis of fatty acids.</p>
+
+<p>To speed up the sample analysis the application will only require 5 fatty acids measurements as inputs achieving a 93.75% accuracy.</p>
+
+<p>The application is web based, access is easy from anywhere and it features a clean, intuitive  interface for quick input and result presentation.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>User Interface</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="./assets/img/Screenshot_web.png" alt=""></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>How to</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The app has a very straightforward use:</p>
+
+<ol>
+<li>Move the sliders of each fatty acid to the appropriate value.</li>
+<li>Press the <code>Go!</code> button</li>
+</ol>
+
+<p>The main panel will refresh and show the name of the producing area and the map will highlight the province where the area belongs.</p>
+
+<p>The user can select the <code>Help</code> tab in the main panel for more details, including sample values.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Behind the scenes</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Essentially, the front-end of the app passes the values for the different fatty acids to the  server side where they are fed to a previously generated model:</p>
+
+<pre><code class="r">userInput &lt;- data.frame(Palmitic = 1116, Stearic = 231, Linoleic = 1168, 
+                        Arachidic = 66, Eicosenoic = 1)
+
+predict(gbm3, userInput)
+</code></pre>
+
+<pre><code>## [1] Inland Sardinia
+## 9 Levels: North Apulia Calabria South Apulia Sicily ... Umbria
+</code></pre>
+
+<p>The model returns then the Area where the olive oil was produced to be shown in the map provided by googleVis.</p>
+
+<p><em>For more details on the model construction click</em> <a href="https://faall.github.io/ProgrammingAssignment9_4/ItalianOilEDA.html">here</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Presentation'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='User Interface'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='How to'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Behind the scenes'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
